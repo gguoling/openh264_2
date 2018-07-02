@@ -36,15 +36,17 @@ ifndef TARGET
 $(error TARGET is not set)
 endif
 
+INCLUDE_PREFIX =
 TOOLCHAINPREFIX = $(shell NDK_PROJECT_PATH=$(SRC_PATH)/codec/build/android/dec make --no-print-dir -f $(NDKROOT)/build/core/build-local.mk DUMP_TOOLCHAIN_PREFIX APP_ABI=$(APP_ABI))
 
-SYSROOT = $(NDKROOT)/platforms/android-$(NDKLEVEL)/arch-$(ARCH)
+SYSROOT = $(NDKROOT)/sysroot
+LDSYSROOT = $(NDKROOT)/platforms/android-$(NDKLEVEL)/arch-$(ARCH)
 CXX = $(TOOLCHAINPREFIX)g++
 CC = $(TOOLCHAINPREFIX)gcc
 AR = $(TOOLCHAINPREFIX)ar
-CFLAGS += -DANDROID_NDK -fpic --sysroot=$(SYSROOT) -MMD -MP
+CFLAGS += -DANDROID_NDK -fpic --sysroot=$(SYSROOT) -isystem ${SYSROOT}/usr/include/${INCLUDE_PREFIX} -MMD -MP -D__ANDROID_API__=${NDKLEVEL}
 CXXFLAGS += -fno-rtti -fno-exceptions
-LDFLAGS += --sysroot=$(SYSROOT)
+LDFLAGS += --sysroot=$(LDSYSROOT)
 SHLDFLAGS = -Wl,--no-undefined -Wl,-z,relro -Wl,-z,now -Wl,-soname,lib$(PROJECT_NAME).so
 
 ifneq ($(CXX),$(wildcard $(CXX)))
