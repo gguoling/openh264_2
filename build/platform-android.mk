@@ -49,6 +49,14 @@ CXXFLAGS += -fno-rtti -fno-exceptions
 LDFLAGS += --sysroot=$(LDSYSROOT)
 SHLDFLAGS = -Wl,--no-undefined -Wl,-z,relro -Wl,-z,now -Wl,-soname,lib$(PROJECT_NAME).so
 
+USE_CLANG := $(shell test $(NDK_VERSION) -gt 19 && echo true)
+ifeq ($(USE_CLANG),true)
+  HOST_OS = $(shell uname -s | tr [A-Z] [a-z])
+  LLVM_INSTALL_DIR = $(NDKROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/bin
+  CC = $(LLVM_INSTALL_DIR)/clang
+  CXX = $(LLVM_INSTALL_DIR)/clang++
+endif
+
 ifneq ($(CXX),$(wildcard $(CXX)))
 ifneq ($(CXX).exe,$(wildcard $(CXX).exe))
 $(error Compiler not found, bad NDKROOT or ARCH?)
