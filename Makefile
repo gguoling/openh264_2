@@ -220,10 +220,12 @@ endif
 endif
 
 libraries: $(LIBPREFIX)$(PROJECT_NAME).$(LIBSUFFIX)
-
+#disable shared library on android as it does not link with armv7 target 21 on ndk19
+ifneq (android, $(OS))
 # No point in building dylib for ios
 ifneq (ios, $(OS))
 libraries: $(LIBPREFIX)$(PROJECT_NAME).$(SHAREDLIBSUFFIX)
+endif
 endif
 
 LIBRARIES += $(LIBPREFIX)$(PROJECT_NAME).$(LIBSUFFIX) $(LIBPREFIX)$(PROJECT_NAME).$(SHAREDLIBSUFFIXFULLVER)
